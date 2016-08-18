@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
+public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
 
-    private static final String TAG = MapAdapter.class.getSimpleName();
+    private static final String TAG = MapRecyclerAdapter.class.getSimpleName();
 
     SparseArray<SectionDataHolder<T>> dataSet = new SparseArray<>();
     List<Integer> viewTypes = new ArrayList<>();

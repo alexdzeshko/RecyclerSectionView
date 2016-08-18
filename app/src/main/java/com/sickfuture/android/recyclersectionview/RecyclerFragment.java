@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sickfuture.android.recyclersectionview.adapter.BaseViewHolder;
-import com.sickfuture.android.recyclersectionview.adapter.MapAdapter;
+import com.sickfuture.android.recyclersectionview.adapter.MapRecyclerAdapter;
 import com.sickfuture.android.recyclersectionview.adapter.SectionDataHolder;
 import com.sickfuture.android.recyclersectionview.model.Model;
 
@@ -34,7 +34,7 @@ public class RecyclerFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         List<Model> generate = Model.generate();
 
-        MapAdapter<Model, BaseViewHolder> adapter = new MapAdapter<Model, BaseViewHolder>() {
+        MapRecyclerAdapter<Model, BaseViewHolder> adapter = new MapRecyclerAdapter<Model, BaseViewHolder>() {
 
             @Override
             protected void onBindItemViewHolder(BaseViewHolder holder, Model item) {
