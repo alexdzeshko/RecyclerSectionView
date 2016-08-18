@@ -11,6 +11,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        showRecycler();
     }
 
     @Override
@@ -25,8 +26,12 @@ public class MainActivity extends AppCompatActivity {
         if (item.getTitle() == "List") {
             getSupportFragmentManager().beginTransaction().replace(R.id.content_container, new ListFragment()).commit();
         } else if (item.getTitle() == "Recycler") {
-            getSupportFragmentManager().beginTransaction().replace(R.id.content_container, new RecyclerFragment()).commit();
+            showRecycler();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showRecycler() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_container, new RecyclerFragment()).commit();
     }
 }

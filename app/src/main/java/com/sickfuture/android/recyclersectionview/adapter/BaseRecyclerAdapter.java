@@ -28,7 +28,7 @@ import java.util.List;
 
 public abstract class BaseRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH>
-        implements Filterable {
+        implements Filterable, IRecyclerAdapter<T> {
 
     public static final int CHOICE_MODE_NONE = 0;
     public static final int CHOICE_MODE_SINGLE = 1;
@@ -262,6 +262,7 @@ public abstract class BaseRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
+    @Override
     public void add(int position, T item) {
         mOriginalValues.add(position, item);
         notifyItemInserted(position);
@@ -269,17 +270,20 @@ public abstract class BaseRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
         notifyItemRangeChanged(position, itemCount);
     }
 
+    @Override
     public void add(T item) {
         mOriginalValues.add(item);
         notifyItemInserted(mOriginalValues.size() - 1);
     }
 
+    @Override
     public void addAll(List<? extends T> items) {
         final int size = this.mOriginalValues.size();
         this.mOriginalValues.addAll(items);
         notifyItemRangeInserted(size, items.size());
     }
 
+    @Override
     public void setItems(List<? extends T> items) {
         clear();
 
@@ -295,26 +299,30 @@ public abstract class BaseRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
 
     }
 
+    @Override
     public void set(int position, T item) {
         mOriginalValues.set(position, item);
         int itemCount = mOriginalValues.size() - position;
         notifyItemRangeChanged(position, itemCount);
     }
 
+    @Override
     public void removeChild(int position) {
         mOriginalValues.remove(position);
         notifyItemRemoved(position);
-//        int itemCount = mOriginalValues.size() - position;
-//        notifyItemRangeChanged(position, itemCount);
+        int itemCount = mOriginalValues.size() - position;
+        notifyItemRangeChanged(position, itemCount);
     }
 
+    @Override
     public void removeChildrenRange(int position, int count) {
         for (int i = 0; i < count; i++) {
-            mOriginalValues.remove(position);
+            removeChild(position);//mOriginalValues.remove(position);
         }
-        notifyItemRangeRemoved(position, count);
+//        notifyItemRangeRemoved(position, count);
     }
 
+    @Override
     public void clear() {
         final int size = mOriginalValues.size();
         mOriginalValues.clear();

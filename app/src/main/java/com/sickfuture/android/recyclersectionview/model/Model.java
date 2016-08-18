@@ -1,6 +1,8 @@
 package com.sickfuture.android.recyclersectionview.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Model {
@@ -16,9 +18,22 @@ public class Model {
 
     public static List<Model> generate() {
         ArrayList<Model> models = new ArrayList<>(200);
-        for (int i = 0; i < 100; i++) {
-            models.add(new Model(i % 20, i % 10, "item " + i));
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                models.add(new Model(i, 0, "item " + j));
+            }
         }
+        Collections.sort(models, new Comparator<Model>() {
+            @Override
+            public int compare(Model l, Model r) {
+                return Integer.valueOf(l.section).compareTo(r.section) * 100 + l.text.compareTo(r.text);
+            }
+        });
         return models;
+    }
+
+    @Override
+    public String toString() {
+        return section+ " "+ text;
     }
 }

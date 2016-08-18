@@ -22,11 +22,16 @@ public abstract class SectionExpandableRecyclerAdapter<T, VH extends RecyclerVie
     protected Map<Integer, Integer> itemPositions = new LinkedHashMap<>();
     private int sectionViewType = hashCode();
 
-    static class SectionData<T> {
-        int code;
+    public static class SectionData<T> {
+        public int code;
         boolean isExpanded;
         List<T> data = new ArrayList<>();
         List<Integer> positions = new ArrayList<>();
+
+        @Override
+        public String toString() {
+            return code + " items ["+data.size()+"] isExp: "+isExpanded;
+        }
     }
 
     public abstract int sectionCode(T item);
