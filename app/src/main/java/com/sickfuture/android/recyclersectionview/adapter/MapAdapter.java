@@ -3,6 +3,7 @@ package com.sickfuture.android.recyclersectionview.adapter;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,9 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
 
     private static final String TAG = MapAdapter.class.getSimpleName();
 
-    Map<Integer, SectionDataHolder<T>> dataSet = new HashMap<>();
+    SparseArray<SectionDataHolder<T>> dataSet = new SparseArray<>();
     List<Integer> viewTypes = new ArrayList<>();
-    Map<Integer, Integer> sectionPositionToCodeMap = new HashMap<>();
+    Map<Integer, Integer> positionToSectionCodeMap = new HashMap<>();
     Map<Integer, T> positionToItemMap = new HashMap<>();
     Map<Integer, VH> headers = new HashMap<>();
     boolean isSectionsCollapsible = true;
@@ -64,15 +65,15 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
-        if (sectionPositionToCodeMap.get(position) != null) {
-            onBindSectionViewHolder(holder, dataSet.get(sectionPositionToCodeMap.get(position)));
+        if (positionToSectionCodeMap.get(position) != null) {
+            onBindSectionViewHolder(holder, dataSet.get(positionToSectionCodeMap.get(position)));
         } else {
             onBindItemViewHolder(holder, positionToItemMap.get(position));
         }
     }
 
     private void onSectionClick(int adapterPosition) {
-        Integer code = sectionPositionToCodeMap.get(adapterPosition);
+        Integer code = positionToSectionCodeMap.get(adapterPosition);
         SectionDataHolder<T> sectionData = dataSet.get(code);
         if (sectionData.isExpanded) {
             //collapse
@@ -90,14 +91,15 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
 
    @Override
     public int getItemCount() {
-        int count = headers.size() + dataSet.keySet().size() + countItems();
+        int count = headers.size() + dataSet.size() + countItems();
         Log.d(TAG, "getItemCount: " + count);
         return count;
     }
 
     private int countItems() {
         int count = 0;
-        for (Integer code : dataSet.keySet()) {
+        for (int i = 0; i < dataSet.size(); i++) {
+            Integer code = dataSet.keyAt(i);
             SectionDataHolder<T> sectionData = dataSet.get(code);
             if (!isSectionsCollapsible || sectionData.isExpanded) {
                 count += sectionData.data.size();
@@ -115,8 +117,8 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
 
     @Override
     public long getItemId(int position) {
-        if (sectionPositionToCodeMap.get(position) != null) {
-            return sectionPositionToCodeMap.get(position).hashCode();
+        if (positionToSectionCodeMap.get(position) != null) {
+            return positionToSectionCodeMap.get(position).hashCode();
         } else {
             return super.getItemId(position);
         }
@@ -124,6 +126,9 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
 
     public void setItems(List<? extends T> items) {
         dataSet.clear();
+        viewTypes.clear();
+        positionToSectionCodeMap.clear();
+        positionToItemMap.clear();
         for (T item : items) {
             int sectionCode = sectionCode(item);
             SectionDataHolder<T> sectionData = dataSet.get(sectionCode);
@@ -138,14 +143,18 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
     }
 
     private void updateInternalStructures() {
+        viewTypes.clear();
+        positionToSectionCodeMap.clear();
+        positionToItemMap.clear();
         int position = 0;
         for (Integer headerViewType : headers.keySet()) {
             viewTypes.add(position, headerViewType);
             position++;
         }
-        for (Integer code : dataSet.keySet()) {
+        for (int i = 0; i < dataSet.size(); i++) {
+            Integer code = dataSet.keyAt(i);
             viewTypes.add(position, sectionViewType());
-            sectionPositionToCodeMap.put(position, code);
+            positionToSectionCodeMap.put(position, code);
             SectionDataHolder<T> sectionData = dataSet.get(code);
             sectionData.sectionPosition = position;
             position++;

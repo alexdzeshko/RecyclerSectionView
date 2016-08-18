@@ -82,7 +82,7 @@ public class RecyclerFragment extends Fragment {
             }
         };
         adapter.setItems(generate);
-        adapter.setSectionsCollapsible(false);
+//        adapter.setSectionsCollapsible(false);
 
         adapter.addHeaderView(new BaseViewHolder(R.layout.header, LayoutInflater.from(getContext()), null));
         adapter.addHeaderView(new BaseViewHolder(R.layout.header, LayoutInflater.from(getContext()), null));
