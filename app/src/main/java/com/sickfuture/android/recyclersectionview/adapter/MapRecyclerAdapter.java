@@ -4,14 +4,13 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
@@ -20,9 +19,9 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
 
     SparseArray<SectionDataHolder<T>> dataSet = new SparseArray<>();
     List<Integer> viewTypes = new ArrayList<>();
-    Map<Integer, Integer> positionToSectionCodeMap = new HashMap<>();
-    Map<Integer, T> positionToItemMap = new HashMap<>();
-    Map<Integer, VH> headers = new HashMap<>();
+    SparseIntArray positionToSectionCodeMap = new SparseIntArray();
+    SparseArray<T> positionToItemMap = new SparseArray<>();
+    SparseArray<VH> headers = new SparseArray<>();
     boolean isSectionsCollapsible = true;
 
     public boolean isSectionsCollapsible() {
@@ -45,7 +44,7 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(headers.containsKey(viewType)) {
+        if(headers.indexOfKey(viewType)>=0) {
             return headers.get(viewType);
         } else if (viewType == sectionViewType()) {
             final VH vh = sectionViewHolder(LayoutInflater.from(parent.getContext()), parent, viewType);
@@ -65,7 +64,7 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
-        if (positionToSectionCodeMap.get(position) != null) {
+        if (positionToSectionCodeMap.indexOfKey(position) >= 0) {
             onBindSectionViewHolder(holder, dataSet.get(positionToSectionCodeMap.get(position)));
         } else {
             onBindItemViewHolder(holder, positionToItemMap.get(position));
@@ -117,8 +116,8 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
 
     @Override
     public long getItemId(int position) {
-        if (positionToSectionCodeMap.get(position) != null) {
-            return positionToSectionCodeMap.get(position).hashCode();
+        if (positionToSectionCodeMap.indexOfKey(position) >= 0) {
+            return Integer.valueOf(positionToSectionCodeMap.get(position)).hashCode();
         } else {
             return super.getItemId(position);
         }
@@ -147,7 +146,8 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
         positionToSectionCodeMap.clear();
         positionToItemMap.clear();
         int position = 0;
-        for (Integer headerViewType : headers.keySet()) {
+        for (int i = 0; i < headers.size(); i++) {
+            Integer headerViewType = headers.keyAt(i);
             viewTypes.add(position, headerViewType);
             position++;
         }
