@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import com.sickfuture.android.recyclersectionview.R;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,21 +17,9 @@ public abstract class SectionExpandableRecyclerAdapter<T, VH extends RecyclerVie
     private final List<T> originalItems;
     protected BaseRecyclerAdapter<T, VH> linkedAdapter;
     protected Map<Integer, Integer> sectionPositions = new LinkedHashMap<>();
-    protected Map<Integer, SectionData<T>> sectionChildrenPositions = new LinkedHashMap<>();
+    protected Map<Integer, SectionDataHolder<T>> sectionChildrenPositions = new LinkedHashMap<>();
     protected Map<Integer, Integer> itemPositions = new LinkedHashMap<>();
     private int sectionViewType = hashCode();
-
-    public static class SectionData<T> {
-        public int code;
-        boolean isExpanded;
-        List<T> data = new ArrayList<>();
-        List<Integer> positions = new ArrayList<>();
-
-        @Override
-        public String toString() {
-            return code + " items ["+data.size()+"] isExp: "+isExpanded;
-        }
-    }
 
     public abstract int sectionCode(T item);
 
@@ -113,13 +100,13 @@ public abstract class SectionExpandableRecyclerAdapter<T, VH extends RecyclerVie
                 currentPosition++;
             }
 
-            SectionData<T> sectionData = sectionChildrenPositions.get(sectionCode);
+            SectionDataHolder<T> sectionData = sectionChildrenPositions.get(sectionCode);
             if (sectionData == null) {
-                sectionData = new SectionData<>();
+                sectionData = new SectionDataHolder<>();
                 sectionData.code = sectionCode;
                 sectionChildrenPositions.put(sectionCode, sectionData);
             }
-            sectionData.positions.add(currentPosition);
+            sectionData.itemsPositions.add(currentPosition);
             sectionData.data.add(item);
 
             currentPosition++;
@@ -181,7 +168,7 @@ public abstract class SectionExpandableRecyclerAdapter<T, VH extends RecyclerVie
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == sectionViewType()) {
-            return (VH) new BaseRecyclerAdapter.BaseViewHolder(R.layout.section, LayoutInflater.from(parent.getContext()), parent) {
+            return (VH) new BaseViewHolder(R.layout.section, LayoutInflater.from(parent.getContext()), parent) {
                 @Override
                 protected void addClicks(ViewMap views) {
                     views.click(new View.OnClickListener() {
@@ -205,15 +192,15 @@ public abstract class SectionExpandableRecyclerAdapter<T, VH extends RecyclerVie
     }
 
     private void toggleSection(Integer sectionCode) {
-        SectionData<T> sectionData = sectionChildrenPositions.get(sectionCode);
+        SectionDataHolder<T> sectionData = sectionChildrenPositions.get(sectionCode);
         if (sectionData.isExpanded) {
             //collapse
             sectionData.isExpanded = false;
-            linkedAdapter.removeChildrenRange(sectionData.positions.get(0), sectionData.positions.size());
+            linkedAdapter.removeChildrenRange(sectionData.itemsPositions.get(0), sectionData.itemsPositions.size());
         } else {
             //expand
             sectionData.isExpanded = true;
-            linkedAdapter.insertItems(sectionData.positions.get(0), sectionData.data);
+            linkedAdapter.insertItems(sectionData.itemsPositions.get(0), sectionData.data);
         }
     }
 

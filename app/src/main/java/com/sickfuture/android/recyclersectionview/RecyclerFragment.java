@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sickfuture.android.recyclersectionview.adapter.BaseRecyclerAdapter;
+import com.sickfuture.android.recyclersectionview.adapter.BaseViewHolder;
 import com.sickfuture.android.recyclersectionview.adapter.MapAdapter;
-import com.sickfuture.android.recyclersectionview.adapter.SectionExpandableRecyclerAdapter;
+import com.sickfuture.android.recyclersectionview.adapter.SectionDataHolder;
 import com.sickfuture.android.recyclersectionview.model.Model;
 
 import java.util.List;
@@ -34,10 +34,10 @@ public class RecyclerFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         List<Model> generate = Model.generate();
 
-        MapAdapter<Model, BaseRecyclerAdapter.BaseViewHolder> adapter = new MapAdapter<Model, BaseRecyclerAdapter.BaseViewHolder>() {
+        MapAdapter<Model, BaseViewHolder> adapter = new MapAdapter<Model, BaseViewHolder>() {
 
             @Override
-            protected void onBindItemViewHolder(BaseRecyclerAdapter.BaseViewHolder holder, Model item) {
+            protected void onBindItemViewHolder(BaseViewHolder holder, Model item) {
                 TextView textView = (TextView) holder.get(R.id.title);
                 if (textView != null) {
                     textView.setText(item.text);
@@ -47,7 +47,7 @@ public class RecyclerFragment extends Fragment {
             }
 
             @Override
-            protected void onBindSectionViewHolder(BaseRecyclerAdapter.BaseViewHolder holder, SectionExpandableRecyclerAdapter.SectionData<Model> sectionData) {
+            protected void onBindSectionViewHolder(BaseViewHolder holder, SectionDataHolder<Model> sectionData) {
                 TextView textView = (TextView) holder.get(R.id.section_title);
                 if (textView != null) {
                     textView.setText("Section "+sectionData.code);
@@ -57,13 +57,13 @@ public class RecyclerFragment extends Fragment {
             }
 
             @Override
-            protected BaseRecyclerAdapter.BaseViewHolder itemViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
-                return new BaseRecyclerAdapter.BaseViewHolder(R.layout.item, inflater, parent);
+            protected BaseViewHolder itemViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+                return new BaseViewHolder(R.layout.item, inflater, parent);
             }
 
             @Override
-            protected BaseRecyclerAdapter.BaseViewHolder sectionViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
-                return new BaseRecyclerAdapter.BaseViewHolder(R.layout.section, inflater, parent);
+            protected BaseViewHolder sectionViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType) {
+                return new BaseViewHolder(R.layout.section, inflater, parent);
             }
 
             @Override
@@ -84,8 +84,8 @@ public class RecyclerFragment extends Fragment {
         adapter.setItems(generate);
         adapter.setSectionsCollapsible(false);
 
-        adapter.addHeaderView(new BaseRecyclerAdapter.BaseViewHolder(R.layout.header, LayoutInflater.from(getContext()), null));
-        adapter.addHeaderView(new BaseRecyclerAdapter.BaseViewHolder(R.layout.header, LayoutInflater.from(getContext()), null));
+        adapter.addHeaderView(new BaseViewHolder(R.layout.header, LayoutInflater.from(getContext()), null));
+        adapter.addHeaderView(new BaseViewHolder(R.layout.header, LayoutInflater.from(getContext()), null));
         recyclerView.setAdapter(adapter);
     }
 }

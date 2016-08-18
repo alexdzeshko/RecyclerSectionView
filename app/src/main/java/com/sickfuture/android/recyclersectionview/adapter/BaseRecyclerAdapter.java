@@ -3,7 +3,6 @@ package com.sickfuture.android.recyclersectionview.adapter;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.annotation.IntDef;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
@@ -419,35 +418,5 @@ public abstract class BaseRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
     protected abstract void onBindItemViewHolder(VH viewHolder, T data, int position, int type);
 
     protected abstract VH viewHolder(LayoutInflater inflater, ViewGroup parent, int type);
-
-    public static class BaseViewHolder extends RecyclerView.ViewHolder {
-
-        ViewMap views;
-
-        public BaseViewHolder(View itemView) {
-            super(itemView);
-            views = new ViewMap(itemView);
-            putViewsIntoMap(views);
-            addClicks(views);
-        }
-
-        public BaseViewHolder(@LayoutRes int layout, @NonNull LayoutInflater inflater, ViewGroup parent) {
-            this(inflater.inflate(layout, parent, false));
-        }
-
-        protected void addClicks(ViewMap views) {
-
-        }
-
-        protected void putViewsIntoMap(ViewMap views) {
-
-        }
-
-        @SuppressWarnings("unchecked")
-        public <T extends View> T get(int viewId) {
-            return (T) views.getView(viewId);
-        }
-
-    }
 
 }

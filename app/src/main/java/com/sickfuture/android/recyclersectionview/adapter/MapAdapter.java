@@ -17,7 +17,7 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
 
     private static final String TAG = MapAdapter.class.getSimpleName();
 
-    Map<Integer, SectionExpandableRecyclerAdapter.SectionData<T>> dataSet = new HashMap<>();
+    Map<Integer, SectionDataHolder<T>> dataSet = new HashMap<>();
     List<Integer> viewTypes = new ArrayList<>();
     Map<Integer, Integer> sectionPositionToCodeMap = new HashMap<>();
     Map<Integer, T> positionToItemMap = new HashMap<>();
@@ -64,8 +64,6 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
 
     @Override
     public void onBindViewHolder(VH holder, int position) {
-        Log.d(TAG, "onBindViewHolder() called with: " + "holder = [" + holder + "], position = [" + position + "]");
-
         if (sectionPositionToCodeMap.get(position) != null) {
             onBindSectionViewHolder(holder, dataSet.get(sectionPositionToCodeMap.get(position)));
         } else {
@@ -73,13 +71,9 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
         }
     }
 
-    protected abstract void onBindItemViewHolder(VH holder, T item);
-
-    protected abstract void onBindSectionViewHolder(VH holder, SectionExpandableRecyclerAdapter.SectionData<T> sectionData);
-
     private void onSectionClick(int adapterPosition) {
         Integer code = sectionPositionToCodeMap.get(adapterPosition);
-        SectionExpandableRecyclerAdapter.SectionData<T> sectionData = dataSet.get(code);
+        SectionDataHolder<T> sectionData = dataSet.get(code);
         if (sectionData.isExpanded) {
             //collapse
             sectionData.isExpanded = false;
@@ -92,14 +86,9 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
             updateInternalStructures();
             notifyItemRangeInserted(adapterPosition + 1, sectionData.data.size());
         }
-        Log.d(TAG, "onSectionClick() called with: adapterPosition = [" + adapterPosition + "] section " + sectionData.code);
     }
 
-    protected abstract VH itemViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType);
-
-    protected abstract VH sectionViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType);
-
-    @Override
+   @Override
     public int getItemCount() {
         int count = headers.size() + dataSet.keySet().size() + countItems();
         Log.d(TAG, "getItemCount: " + count);
@@ -109,7 +98,7 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
     private int countItems() {
         int count = 0;
         for (Integer code : dataSet.keySet()) {
-            SectionExpandableRecyclerAdapter.SectionData<T> sectionData = dataSet.get(code);
+            SectionDataHolder<T> sectionData = dataSet.get(code);
             if (!isSectionsCollapsible || sectionData.isExpanded) {
                 count += sectionData.data.size();
             }
@@ -134,11 +123,12 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
     }
 
     public void setItems(List<? extends T> items) {
+        dataSet.clear();
         for (T item : items) {
             int sectionCode = sectionCode(item);
-            SectionExpandableRecyclerAdapter.SectionData<T> sectionData = dataSet.get(sectionCode);
+            SectionDataHolder<T> sectionData = dataSet.get(sectionCode);
             if (sectionData == null) {
-                sectionData = new SectionExpandableRecyclerAdapter.SectionData<>();
+                sectionData = new SectionDataHolder<>();
                 sectionData.code = sectionCode;
                 dataSet.put(sectionCode, sectionData);
             }
@@ -156,12 +146,14 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
         for (Integer code : dataSet.keySet()) {
             viewTypes.add(position, sectionViewType());
             sectionPositionToCodeMap.put(position, code);
-            SectionExpandableRecyclerAdapter.SectionData<T> sectionData = dataSet.get(code);
+            SectionDataHolder<T> sectionData = dataSet.get(code);
+            sectionData.sectionPosition = position;
             position++;
             if (!isSectionsCollapsible || sectionData.isExpanded) {
                 for (T t : sectionData.data) {
                     viewTypes.add(position, itemViewType(t));
                     positionToItemMap.put(position, t);
+                    sectionData.itemsPositions.add(position);
                     position++;
                 }
                 Log.d(TAG, code + ": " + position);
@@ -173,6 +165,14 @@ public abstract class MapAdapter<T, VH extends RecyclerView.ViewHolder>
 
     protected abstract int sectionViewType();
 
-    public abstract int sectionCode(T item);
+    protected abstract int sectionCode(T item);
+
+    protected abstract VH itemViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType);
+
+    protected abstract VH sectionViewHolder(LayoutInflater inflater, ViewGroup parent, int viewType);
+
+    protected abstract void onBindItemViewHolder(VH holder, T item);
+
+    protected abstract void onBindSectionViewHolder(VH holder, SectionDataHolder<T> sectionData);
 
 }
