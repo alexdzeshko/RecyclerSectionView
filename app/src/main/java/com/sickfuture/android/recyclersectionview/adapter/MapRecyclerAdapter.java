@@ -44,7 +44,7 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        if(headers.indexOfKey(viewType)>=0) {
+        if (headers.indexOfKey(viewType) >= 0) {
             return headers.get(viewType);
         } else if (viewType == sectionViewType()) {
             final VH vh = sectionViewHolder(LayoutInflater.from(parent.getContext()), parent, viewType);
@@ -88,7 +88,7 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
         }
     }
 
-   @Override
+    @Override
     public int getItemCount() {
         int count = headers.size() + dataSet.size() + countItems();
         Log.d(TAG, "getItemCount: " + count);
@@ -109,9 +109,7 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
 
     @Override
     public int getItemViewType(int position) {
-        Integer type = viewTypes.get(position);
-        Log.d(TAG, "getItemViewType() : position = [" + position + "] type = " + type);
-        return type;
+        return viewTypes.get(position);
     }
 
     @Override
@@ -165,7 +163,6 @@ public abstract class MapRecyclerAdapter<T, VH extends RecyclerView.ViewHolder>
                     sectionData.itemsPositions.add(position);
                     position++;
                 }
-                Log.d(TAG, code + ": " + position);
             }
         }
     }
